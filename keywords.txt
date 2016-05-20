@@ -1,0 +1,9 @@
+Thingplus	KEYWORD1
+ThingplusClass	KEYWORD1
+
+begin			KEYWORD2
+keepConnect		KEYWORD2
+gatewayStatusPublish	KEYWORD2
+sensorStatusPublish	KEYWORD2
+valuePublish		KEYWORD2
+setActuatingCallback	KEYWORD2
