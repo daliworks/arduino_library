@@ -1,5 +1,7 @@
 #include <Thingplus.h>
 #include <TimeLib.h>
+
+//FIXME WIFI SSID / PASSWORD
 #include "ap_setting.h"
 
 const char* ssid = WIFI_SSID;
@@ -7,8 +9,8 @@ const char* password = WIFI_PASSWORD;
 
 //////////////////////////////////////////////////////////////////
 //byte mac[6] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};     //FIXME MAC ADDRESS
-const char *apikey = "";            //FIXME APIKEY
-const char *ledId = "led-000000000000-0";      //FIXME LED ID
+const char *apikey = "";  					              //FIXME APIKEY
+const char *ledId = "led-000000000000-0";			      //FIXME LED ID
 const char *temperatureId = "temperature-000000000000-0"; //FIXME TEMPERATURE ID
 //////////////////////////////////////////////////////////////////
 
@@ -89,16 +91,13 @@ time_t current;
 time_t nextReportInterval = now();
 
 float temperatureGet() {
-  /*
   int B = 3975;
   float temperature;
   float resistance;
   int a = analogRead(TEMP_GPIO);
   resistance = (float)(1023 - a) * 10000 / a; //get the resistance of the sensor;
   temperature = 1 / (log(resistance / 10000) / B + 1 / 298.15) - 273.15; //convert to temperature via datasheet;
-  */
-  uint8_t value = *(volatile uint8_t *)0x3FF20E44;
-  return value;
+  return temperature;
 }
 
 void loop() {
