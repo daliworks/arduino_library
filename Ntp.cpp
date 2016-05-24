@@ -1,9 +1,19 @@
-#include <SPI.h>
-#include <Ethernet.h>
-//#include <PubSubClient.h>
-#include <Time.h>
+#include <Timelib.h>
 
-EthernetUDP Udp;
+#ifdef ESP8266
+	#include <ESP8266WiFi.h>
+	#include <WiFiClient.h>
+	#include <WiFiUdp.h>
+#else
+	#include <SPI.h>
+	#include <Ethernet.h> 
+#endif
+
+#ifdef ESP8266
+	WiFiUDP Udp;
+#else
+	EthernetUDP Udp;
+#endif
 
 static const int NTP_PACKET_SIZE = 48; // NTP time is in the first 48 bytes of message
 static byte packetBuffer[NTP_PACKET_SIZE]; //buffer to hold incoming & outgoing packets
