@@ -7,7 +7,7 @@ const char* password = WIFI_PASSWORD;
 
 //////////////////////////////////////////////////////////////////
 //byte mac[6] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};     //FIXME MAC ADDRESS
-const char *apikey = "DUfZzKPvFQO03KzN1xZT8tIyf9E=";            //FIXME APIKEY
+const char *apikey = "";            //FIXME APIKEY
 const char *ledId = "led-000000000000-0";      //FIXME LED ID
 const char *temperatureId = "temperature-000000000000-0"; //FIXME TEMPERATURE ID
 //////////////////////////////////////////////////////////////////
