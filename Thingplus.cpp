@@ -3,12 +3,17 @@
  * Use is subject to license terms.
  */
 #include "Arduino.h"
-
 #include <ArduinoJson.h>
-#include <Ethernet.h>
 #include <PubSubClient.h>
-#include <SPI.h>
 #include <Time.h>
+
+#ifdef ESP8266
+	#include <ESP8266WiFi.h>
+	#include <WiFiClient.h>
+#else
+	#include <SPI.h>
+	#include <Ethernet.h> 
+#endif
 
 #include "Thingplus.h"
 #include "Ntp.h"
@@ -17,6 +22,7 @@ const char *server = "dmqtt.thingplus.net";
 const int port = 1883;
 
 ThingplusClass Thingplus;
+
 
 void callbackSubscribe(char *topic, uint8_t *payload, unsigned int length) {
 	StaticJsonBuffer<200> jsonBuffer;
@@ -49,15 +55,26 @@ void ThingplusClass::begin(byte mac[], const char *apikey) {
 	sprintf(this->gw_id, "%02x%02x%02x%02x%02x%02x", 
 			mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
 	this->apikey = apikey;
-	Ethernet.begin(this->mac);
-	delay(1500);
+
+	#ifdef ESP8266
+      	Serial.println();
+	#else
+		Ethernet.begin(this->mac);
+		delay(1500);
+	#endif
 
 	NtpBegin();
 	NtpSync();
 
-	this->mqtt.setCallback(callbackSubscribe);
-	this->mqtt.setClient(this->ethernet);
-	this->mqtt.setServer(server, port);
+	#ifdef ESP8266
+		this->mqtt.setCallback(callbackSubscribe);
+		this->mqtt.setClient(this->wifiClient);
+		this->mqtt.setServer(server, port);		
+	#else
+		this->mqtt.setCallback(callbackSubscribe);
+		this->mqtt.setClient(this->ethernet);
+		this->mqtt.setServer(server, port);	
+	#endif
 }
 
 void ThingplusClass::mqttOnPublish() {
