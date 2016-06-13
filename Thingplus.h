@@ -17,41 +17,41 @@
 #else
 	#include <SPI.h>
 	#include <Ethernet.h> 
-#endif 
+#endif
 
-#define THINGPLUS_VALUE_MESSAGE_LEN	36
-#define THINGPLUS_TOPIC_LEN		50
 
 class ThingplusClass {
 public:
-	void begin(byte mac[], const char *apikey);
-	void keepConnect();
+	void begin(Client& client, byte mac[], const char *apikey);
 
-	void gatewayStatusPublish(bool on, time_t durationSec);
-	void sensorStatusPublish(const char *id, bool on, time_t durationSec);
-	void valuePublish(const char *id, char *value);
-	void valuePublish(const char *id, int value);
-	void valuePublish(const char *id, float value);
+	void connect(void);
+	void disconnect(void);
+	bool loop(void);
 
-	void setActuatingCallback(char* (*cb)(const char* id, const char* cmd, const char* options));
+	bool mqttStatusPublish(bool on);
 
-	char* (*actuatingCallback)(const char *id, const char *cmd, const char *options);
-	char gw_id[13];
+	bool gatewayStatusPublish(bool on, time_t durationSec);
+	bool sensorStatusPublish(const char *id, bool on, time_t durationSec);
 
-	PubSubClient mqtt;
+	bool valuePublish(const char *id, char *value);
+	bool valuePublish(const char *id, int value);
+	bool valuePublish(const char *id, float value);
 
-	#ifdef ESP8266
-		WiFiClient wifiClient;
-	#else
-		EthernetClient ethernet;
-	#endif
+	void actuatorCallbackSet(char* (*cb)(const char* id, const char* cmd, const char* options));
+
+	// INTERNAL USE ONLY
+	char *_actuatorDo(const char *id, const char *cmd, const char *options);
+	void _actuatorResultPublish(const char *messageId, char *result);
+	//
 
 private:
+	char gatewayId[13];
 	const char *apikey;
+	PubSubClient mqtt;
 	byte *mac;
-	void statusPublish(const char *topic, bool on, time_t durationSec);
-	void mqttOnPublish(void);
 
+	char* (*actuatorCallback)(const char *id, const char *cmd, const char *options);
+	bool statusPublish(const char *topic, bool on, time_t durationSec);
 };
 
 extern ThingplusClass Thingplus;
