@@ -1,4 +1,4 @@
-# arduino_library
+# Thingplus
 
 This is Thing+ MQTT library for **Arduino** and **ESP8266**.<br>
 You can make your own IoT application fast with Thing+<br>
