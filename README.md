@@ -93,8 +93,11 @@ Here is Thing+ arduino_libaray features.<br>
 
 <br>
 
+### News
+- 06.18.16 : Now you can install Thingplus library with Arduino library manager
+
 ### Release Note
-- v1.0.0 : Initial release
+- v1.0 : Initial release
 
 ## Please visit our support page for more information
 http://support.thingplus.net/en/open-hardware/arduino-noSSL-user-guide.html
