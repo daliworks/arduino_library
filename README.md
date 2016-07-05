@@ -94,7 +94,8 @@ Here is Thing+ arduino_libaray features.<br>
 <br>
 
 ### News
-- 06.18.16 : Now you can install Thingplus library with Arduino library manager
+- 07.05.2016 : v1.0.1 Released
+- 06.18.2016 : Now you can install Thingplus library with Arduino library manager
 
 ### Release Note
 - v1.0.1
