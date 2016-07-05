@@ -11,7 +11,7 @@
 #include "Thingplus.h"
 
 #define THINGPLUS_VALUE_MESSAGE_LEN	36
-#define THINGPLUS_TOPIC_LEN		50
+#define THINGPLUS_TOPIC_LEN		80
 #define THINGPLUS_SHORT_TOPIC_LEN	32
 
 const char *server = "dmqtt.thingplus.net";
@@ -31,6 +31,7 @@ void mqttSubscribeCallback(char *topic, uint8_t *payload, unsigned int length)
 
 	Serial.print("Message subscribed. method:");
 	Serial.println(method);
+	Serial.flush();
 
 	if (strcmp(method, "controlActuator") == 0) {
 		char *result = Thingplus._actuatorDo(root["params"]["id"], root["params"]["cmd"], root["params"]["options"]);
