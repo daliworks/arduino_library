@@ -7,35 +7,49 @@
 #include <PubSubClient.h>
 #include <Time.h>
 
-#include "Ntp.h"
 #include "Thingplus.h"
 
 #define THINGPLUS_VALUE_MESSAGE_LEN	36
 #define THINGPLUS_TOPIC_LEN		80
 #define THINGPLUS_SHORT_TOPIC_LEN	32
 
-const char *server = "dmqtt.thingplus.net";
-const int port = 1883;
+void serverTimeSync(const char *serverTimeMs) {
+#define TIME_LENGTH 10
+	char serverTimeSec[TIME_LENGTH+1] = {0,};
+	strncpy(serverTimeSec, serverTimeMs, TIME_LENGTH);
+
+	int i;
+	time_t syncTime = 0;
+	for (i=0; i<TIME_LENGTH; i++)
+		syncTime = (10 * syncTime) + (serverTimeSec[i] - '0');
+
+	setTime(syncTime);
+	Serial.print(F("[INFO]Time Synced. NOW:"));
+	Serial.println(now());
+}
 
 void mqttSubscribeCallback(char *topic, uint8_t *payload, unsigned int length)
 {
 	StaticJsonBuffer<200> jsonBuffer;
 	JsonObject& root = jsonBuffer.parseObject((char*)payload);
 	if (!root.success()) {
-		Serial.println("parseObject() failed");
+		Serial.println(F("parseObject() failed"));
 		return;
 	}
 
 	const char *id = root["id"];
 	const char *method = root["method"];
 
-	Serial.print("Message subscribed. method:");
+	Serial.print(F("Message subscribed. method:"));
 	Serial.println(method);
 	Serial.flush();
 
 	if (strcmp(method, "controlActuator") == 0) {
 		char *result = Thingplus._actuatorDo(root["params"]["id"], root["params"]["cmd"], root["params"]["options"]);
 		Thingplus._actuatorResultPublish(id, result);
+	}
+	else if (strcmp(method, "timeSync") == 0) {
+		serverTimeSync(root["params"]["time"]);
 	}
 }
 
@@ -71,9 +85,8 @@ bool ThingplusClass::valuePublish(const char *id, char *value)
 	char valuePublishTopic[THINGPLUS_TOPIC_LEN] = {0,};
 	sprintf(valuePublishTopic, "v/a/g/%s/s/%s", this->gatewayId, id);
 
-	time_t current = now();
 	char v[THINGPLUS_VALUE_MESSAGE_LEN] = {0,};
-	sprintf(v, "%ld000,%s", current, value);
+	sprintf(v, "%ld000,%s", now(), value);
 
 	return this->mqtt.publish(valuePublishTopic, v);
 }
@@ -83,9 +96,8 @@ bool ThingplusClass::valuePublish(const char *id, float value)
 	char valuePublishTopic[THINGPLUS_TOPIC_LEN] = {0,};
 	sprintf(valuePublishTopic, "v/a/g/%s/s/%s", this->gatewayId, id);
 
-	time_t current = now();
 	char v[THINGPLUS_VALUE_MESSAGE_LEN] = {0,};
-	sprintf(v, "%ld000,", current);
+	sprintf(v, "%ld000,", now());
 	dtostrf(value, 5, 2, &v[strlen(v)]);
 
 	return this->mqtt.publish(valuePublishTopic, v);
@@ -96,18 +108,16 @@ bool ThingplusClass::valuePublish(const char *id, int value)
 	char valuePublishTopic[THINGPLUS_TOPIC_LEN] = {0,};
 	sprintf(valuePublishTopic, "v/a/g/%s/s/%s", this->gatewayId, id);
 
-	time_t current = now();
 	char v[THINGPLUS_VALUE_MESSAGE_LEN] = {0,};
-	sprintf(v, "%ld000,%d", current, value);
+	sprintf(v, "%ld000,%d", now(), value);
 
 	return this->mqtt.publish(valuePublishTopic, v);
 }
 
 bool ThingplusClass::statusPublish(const char *topic, bool on, time_t durationSec)
 {
-	time_t current = now();
 	char status[16] = {0,};
-	sprintf(status, "%s,%ld000", on ? "on" : "off", current + durationSec);
+	sprintf(status, "%s,%ld000", on ? "on" : "off", now() + durationSec);
 
 	return this->mqtt.publish(topic, status);
 }
@@ -141,7 +151,7 @@ bool ThingplusClass::mqttStatusPublish(bool on)
 bool ThingplusClass::loop(void)
 {
 	if (!this->mqtt.connected()) {
-		Serial.println("[ERR] MQTT disconnected");
+		Serial.println(F("[ERR] MQTT disconnected"));
 		this->connect();
 	}
 
@@ -161,14 +171,14 @@ void ThingplusClass::connect(void)
 		ret = this->mqtt.connect(this->gatewayId, this->gatewayId, 
 				this->apikey, willTopic, 1, true, "err");
 		if (!ret) {
-			Serial.print("ERR: MQTT connection failed.");
+			Serial.print(F("ERR: MQTT connection failed."));
 
 			int errCode = this->mqtt.state();
 			if (errCode == 5)
-				Serial.println(" APIKEY ERROR");
+				Serial.println(F(" APIKEY ERROR"));
 			else
 				Serial.println(this->mqtt.state());
-			Serial.println("ERR: Retry");
+			Serial.println(F("ERR: Retry"));
 			delay(MQTT_RETRY_INTERVAL_MS);
 		}
 	} while(!this->mqtt.connected());
@@ -179,17 +189,20 @@ void ThingplusClass::connect(void)
 
 	this->mqttStatusPublish(true);
 
-	Serial.println("INFO: MQTT Connected");
+	Serial.println(F("INFO: MQTT Connected"));
 }
 
 void ThingplusClass::disconnect(void)
 {
 	this->mqtt.disconnect();
-	Serial.println("INFO: MQTT Disconnected");
+	Serial.println(F("INFO: MQTT Disconnected"));
 }
 
 void ThingplusClass::begin(Client& client, byte mac[], const char *apikey)
 {
+	const char *server = "dmqtt.thingplus.net";
+	const int port = 1883;
+
 	this->mac = mac;
 	sprintf(this->gatewayId, "%02x%02x%02x%02x%02x%02x", 
 			mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
@@ -198,9 +211,6 @@ void ThingplusClass::begin(Client& client, byte mac[], const char *apikey)
 	this->mqtt.setCallback(mqttSubscribeCallback);
 	this->mqtt.setServer(server, port);		
 	this->mqtt.setClient(client);
-
-	NtpBegin();
-	NtpSync();
 }
 
 ThingplusClass Thingplus;
