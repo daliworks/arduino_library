@@ -11,15 +11,6 @@
 #include <PubSubClient.h>
 #include <Time.h>
 
-#ifdef ESP8266
-	#include <ESP8266WiFi.h>
-	#include <WiFiClient.h>
-#else
-	#include <SPI.h>
-	#include <Ethernet.h> 
-#endif
-
-
 class ThingplusClass {
 public:
 	void begin(Client& client, byte mac[], const char *apikey);
