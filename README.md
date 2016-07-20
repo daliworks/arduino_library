@@ -94,10 +94,15 @@ Here is Thing+ arduino_libaray features.<br>
 <br>
 
 ### News
+- 07.20.2016 : v1.0.2 Released
 - 07.05.2016 : v1.0.1 Released
 - 06.18.2016 : Now you can install Thingplus library with Arduino library manager
 
 ### Release Note
+- v1.0.2
+ - Delete predefined target board configuration
+ - Gracefully reduce SRAM usage.
+ - A ardino time is syncronized with Thing+ server time instead of NTP.
 - v1.0.1
  - could not send multiple sensor status fixed
  - broken subscribe method printing fixed
