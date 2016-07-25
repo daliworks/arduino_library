@@ -115,6 +115,9 @@ float temperatureGet() {
 }
 
 void loop() {
+	Thingplus.loop();
+	Thingplus.loop();
+
 	current = now();
 	if (current > nextReportInterval) {
 		Thingplus.gatewayStatusPublish(true, reportIntervalSec * 3);
@@ -123,5 +126,4 @@ void loop() {
 		nextReportInterval = current + reportIntervalSec;
 	}
 
-	Thingplus.loop();
 }
