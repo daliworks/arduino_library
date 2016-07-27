@@ -28,10 +28,10 @@ public:
 	bool valuePublish(const char *id, int value);
 	bool valuePublish(const char *id, float value);
 
-	void actuatorCallbackSet(char* (*cb)(const char* id, const char* cmd, const char* options));
+	void actuatorCallbackSet(char* (*cb)(const char* id, const char* cmd, JsonObject& options));
 
 	// INTERNAL USE ONLY
-	char *_actuatorDo(const char *id, const char *cmd, const char *options);
+	char *_actuatorDo(const char *id, const char *cmd, JsonObject& options);
 	void _actuatorResultPublish(const char *messageId, char *result);
 	//
 
@@ -41,7 +41,7 @@ private:
 	PubSubClient mqtt;
 	byte *mac;
 
-	char* (*actuatorCallback)(const char *id, const char *cmd, const char *options);
+	char* (*actuatorCallback)(const char *id, const char *cmd, JsonObject& options);
 	bool statusPublish(const char *topic, bool on, time_t durationSec);
 };
 

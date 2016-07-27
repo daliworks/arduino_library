@@ -69,7 +69,7 @@ static void _gpioInit(void) {
 	pinMode(LED_GPIO, OUTPUT);
 }
 
-char* actuatingCallback(const char *id, const char *cmd, const char *options) {
+char* actuatingCallback(const char *id, const char *cmd, JsonObject& options) {
 	if (strcmp(id, ledId) == 0) { 
 		if (strcmp(cmd, "on") == 0) {
 			digitalWrite(LED_GPIO, HIGH);
@@ -116,7 +116,6 @@ float temperatureGet() {
 
 void loop() {
 	Thingplus.loop();
-	Thingplus.loop();
 
 	current = now();
 	if (current > nextReportInterval) {
@@ -125,5 +124,4 @@ void loop() {
 		Thingplus.valuePublish(temperatureId, temperatureGet());
 		nextReportInterval = current + reportIntervalSec;
 	}
-
 }
