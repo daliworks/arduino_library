@@ -11,6 +11,39 @@ Here is Thing+ arduino_libaray features.<br>
 - Receive actuator commands from Thing+
 - Automatic time synchronzing
 
+### News
+- 07.27.2016 : v1.0.4 Released
+ - From 1.0.4, Arduino example uees timer library. 
+   - If you want to run Arduino example, You MUST donwload timer library. You can download the library from here : https://github.com/JChristensen/Timer
+   - Thingplus library is still independent from Timer library. If you are not running the example, You don`t need to install the Timer library.
+- 07.20.2016 : v1.0.2 Released
+- 07.05.2016 : v1.0.1 Released
+- 06.18.2016 : Now you can install Thingplus library with Arduino library manager
+
+### Release Note
+- v1.0.4
+ - Bug Fixed
+   - Invalid "options" argument is passing to actuator callback.
+ - actuatorCallbackSet Method parameter type modified.
+
+- v1.0.3
+ - WRONG RELEASE.
+
+- v1.0.2
+ - Delete predefined target board configuration
+ - Gracefully reduce SRAM usage.
+ - A ardino time is syncronized with Thing+ server time instead of NTP.
+
+- v1.0.1
+ - could not send multiple sensor status fixed
+ - broken subscribe method printing fixed
+
+- v1.0.0 : Initial release
+
+## Please visit our support page for more information
+http://support.thingplus.net/en/open-hardware/arduino-noSSL-user-guide.html
+
+
 ### APIs
 #### void begin(Client& client, byte mac[], const char* apikey)
 ```
@@ -92,36 +125,3 @@ Here is Thing+ arduino_libaray features.<br>
 ```
 
 <br>
-
-### News
-- 07.27.2016 : v1.0.4 Released
- - From 1.0.4, Arduino example uees timer library. 
-  - If you want to run Arduino example, You MUST donwload timer library. You can download the library from here : https://github.com/JChristensen/Timer
-  - Thingplus library is still independent from Timer library. If you are not running the example, You don`t need to install the Timer library.
-- 07.20.2016 : v1.0.2 Released
-- 07.05.2016 : v1.0.1 Released
-- 06.18.2016 : Now you can install Thingplus library with Arduino library manager
-
-### Release Note
-- v1.0.4
- - Bug Fixed
-  - Invalid "options" argument is passing to actuator callback.
- - actuatorCallbackSet Method parameter type modified.
-
-- v1.0.3
- - WRONG RELEASE.
-
-- v1.0.2
- - Delete predefined target board configuration
- - Gracefully reduce SRAM usage.
- - A ardino time is syncronized with Thing+ server time instead of NTP.
-
-- v1.0.1
- - could not send multiple sensor status fixed
- - broken subscribe method printing fixed
-
-- v1.0.0 : Initial release
-
-## Please visit our support page for more information
-http://support.thingplus.net/en/open-hardware/arduino-noSSL-user-guide.html
-
