@@ -117,7 +117,7 @@ http://support.thingplus.net/en/open-hardware/arduino-noSSL-user-guide.html
       - value : Sensor value
 ```
 
-#### void actuatorCallbackSet(char (*cb)(const char* id, const char* cmd, const char* options));
+#### void actuatorCallbackSet(char (*cb)(const char* id, const char* cmd, JsonObject& options));
 ```
    Description : Register actuator callback function.
    Parameter
