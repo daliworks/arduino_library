@@ -43,6 +43,7 @@ private:
 
 	char* (*actuatorCallback)(const char *id, const char *cmd, JsonObject& options);
 	bool statusPublish(const char *topic, bool on, time_t durationSec);
+	bool mqttPublish(const char *topic, const char *msg);
 };
 
 extern ThingplusClass Thingplus;
