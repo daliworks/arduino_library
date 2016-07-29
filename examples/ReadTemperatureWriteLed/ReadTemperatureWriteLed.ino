@@ -104,6 +104,7 @@ float temperatureGet() {
 	float temperature;
 	float resistance;
 	int a = analogRead(TEMP_GPIO);
+
 	resistance=(float)(1023-a)*10000/a; //get the resistance of the sensor;
 	temperature=1/(log(resistance/10000)/B+1/298.15)-273.15;//convert to temperature via datasheet;
 	return temperature;
@@ -114,9 +115,11 @@ void loop() {
 	t.update();
 
 	current = now();
+
 	if (current > nextReportInterval) {
 		Thingplus.gatewayStatusPublish(true, reportIntervalSec * 3);
 		Thingplus.sensorStatusPublish(temperatureId, true, reportIntervalSec * 3);
+		Thingplus.sensorStatusPublish(ledId, true, reportIntervalSec * 3);
 		Thingplus.valuePublish(temperatureId, temperatureGet());
 		nextReportInterval = current + reportIntervalSec;
 	}

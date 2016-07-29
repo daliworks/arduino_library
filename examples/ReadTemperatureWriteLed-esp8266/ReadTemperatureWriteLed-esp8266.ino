@@ -121,6 +121,7 @@ void loop() {
 	if (current > nextReportInterval) {
 		Thingplus.gatewayStatusPublish(true, reportIntervalSec * 3);
 		Thingplus.sensorStatusPublish(temperatureId, true, reportIntervalSec * 3);
+		Thingplus.sensorStatusPublish(ledId, true, reportIntervalSec * 3);
 		Thingplus.valuePublish(temperatureId, temperatureGet());
 		nextReportInterval = current + reportIntervalSec;
 	}
