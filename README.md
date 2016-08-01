@@ -12,6 +12,7 @@ Here is Thing+ arduino_libaray features.<br>
 - Automatic time synchronzing
 
 ### News
+- 08.01.2016 : v1.0.5 Release
 - 07.27.2016 : v1.0.4 Released
  - From 1.0.4, Arduino example uees timer library. 
    - If you want to run Arduino example, You MUST donwload timer library. You can download the library from here : https://github.com/JChristensen/Timer
@@ -21,6 +22,11 @@ Here is Thing+ arduino_libaray features.<br>
 - 06.18.2016 : Now you can install Thingplus library with Arduino library manager
 
 ### Release Note
+- v1.0.5
+ - Library stabilty enhanced.
+   - SRAM overflow fixed
+ - Example code modified.
+   - Send actuator status periodically.
 - v1.0.4
  - Bug Fixed
    - Invalid "options" argument is passing to actuator callback.
