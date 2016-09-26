@@ -1,6 +1,6 @@
 # Thingplus
 
-This is Thing+ MQTT library for **Arduino** and **ESP8266**.<br>
+This is Thing+ MQTT library for **Arduino**, **ARM CORTEX-M** and **ESP8266**.<br>
 You can make your own IoT application fast with Thing+<br>
 
 Here is Thing+ arduino_libaray features.<br>
@@ -12,6 +12,8 @@ Here is Thing+ arduino_libaray features.<br>
 - Automatic time synchronzing
 
 ### News
+- 09.26.2016 : v1.0.6 Release
+   - For now, Thingplus library is compatible with CORTEX-M
 - 09.19.2016 : v1.0.5 Release
 - 07.27.2016 : v1.0.4 Released
  - From 1.0.4, Arduino example uees timer library. 
@@ -22,6 +24,8 @@ Here is Thing+ arduino_libaray features.<br>
 - 06.18.2016 : Now you can install Thingplus library with Arduino library manager
 
 ### Release Note
+- v1.0.6
+ - ARM Cortex-M compatibles added.
 - v1.0.5
  - Library stabilty enhanced.
    - SRAM overflow fixed
