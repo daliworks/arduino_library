@@ -7,6 +7,7 @@
 #include <PubSubClient.h>
 #include <Time.h>
 
+#include "platform.h"
 #include "Thingplus.h"
 
 #define THINGPLUS_VALUE_MESSAGE_LEN	36
@@ -25,24 +26,24 @@ void serverTimeSync(const char *serverTimeMs) {
 		syncTime = (10 * syncTime) + (serverTimeSec[i] - '0');
 
 	setTime(syncTime);
-	Serial.print(F("INFO: Time Synced. NOW:"));
-	Serial.println(now());
+	SERIALPRINT(F("INFO: Time Synced. NOW:"));
+	SERIALPRINTLN(now());
 }
 
 void mqttSubscribeCallback(char *topic, uint8_t *payload, unsigned int length) {
 	StaticJsonBuffer<200> jsonBuffer;
 	JsonObject& root = jsonBuffer.parseObject((char*)payload);
 	if (!root.success()) {
-		Serial.println(F("parseObject() failed"));
+		SERIALPRINTLN(F("parseObject() failed"));
 		return;
 	}
 
 	const char *id = root["id"];
 	const char *method = root["method"];
 
-	Serial.print(F("INFO: Message subscribed. method:"));
-	Serial.println(method);
-	Serial.flush();
+	SERIALPRINT(F("INFO: Message subscribed. method:"));
+	SERIALPRINTLN(method);
+	SERIALFLUSH();
 
 	if (strcmp(method, "controlActuator") == 0) {
 		JsonObject& options = root["params"]["options"].as<JsonObject&>();
@@ -56,13 +57,13 @@ void mqttSubscribeCallback(char *topic, uint8_t *payload, unsigned int length) {
 
 bool ThingplusClass::mqttPublish(const char *topic, const char *payload) {
 	if (!this->mqtt.publish(topic, payload, strlen(payload))) {
-		Serial.println(F("ERR Publish failed."));
+		SERIALPRINTLN(F("ERR Publish failed."));
 
-		Serial.print(F("TOPIC:"));
-		Serial.println(topic);
+		SERIALPRINT(F("TOPIC:"));
+		SERIALPRINTLN(topic);
 
-		Serial.print(F("PAYLOAD:"));
-		Serial.println(payload);
+		SERIALPRINT(F("PAYLOAD:"));
+		SERIALPRINTLN(payload);
 
 		return false;
 	}
@@ -71,13 +72,13 @@ bool ThingplusClass::mqttPublish(const char *topic, const char *payload) {
 
 void ThingplusClass::_actuatorResultPublish(const char *messageId, char *result) {
 	char responseTopic[THINGPLUS_SHORT_TOPIC_LEN] = {0,};
-	snprintf_P(responseTopic, sizeof(responseTopic), PSTR("v/a/g/%s/res"), this->gatewayId);
+	snprintf(responseTopic, sizeof(responseTopic), PSTR("v/a/g/%s/res"), this->gatewayId);
 
 	char responseMessage[64] = {0,};
 	if (result)
-		snprintf_P(responseMessage, sizeof(responseMessage), PSTR("{\"id\":\"%s\",\"result\":\"%s\"}"), messageId, result);
+		snprintf(responseMessage, sizeof(responseMessage), PSTR("{\"id\":\"%s\",\"result\":\"%s\"}"), messageId, result);
 	else
-		snprintf_P(responseMessage, sizeof(responseMessage), PSTR("{\"id\":\"%s\",\"error\": {\"code\": -32000}}"), messageId);
+		snprintf(responseMessage, sizeof(responseMessage), PSTR("{\"id\":\"%s\",\"error\": {\"code\": -32000}}"), messageId);
 
 	this->mqttPublish(responseTopic, responseMessage);
 }
@@ -96,59 +97,64 @@ void ThingplusClass::actuatorCallbackSet(char* (*cb)(const char* id, const char*
 
 bool ThingplusClass::valuePublish(const char *id, char *value) {
 	char valuePublishTopic[THINGPLUS_TOPIC_LEN] = {0,};
-	snprintf_P(valuePublishTopic, sizeof(valuePublishTopic), PSTR("v/a/g/%s/s/%s"), this->gatewayId, id);
+	snprintf(valuePublishTopic, sizeof(valuePublishTopic), PSTR("v/a/g/%s/s/%s"), this->gatewayId, id);
 
 	char v[THINGPLUS_VALUE_MESSAGE_LEN] = {0,};
-	snprintf_P(v, sizeof(v), PSTR("%ld000,%s"), now(), value);
+	snprintf(v, sizeof(v), PSTR("%ld000,%s"), now(), value);
 
 	return this->mqttPublish(valuePublishTopic, v);
 }
 
 bool ThingplusClass::valuePublish(const char *id, float value) {
 	char valuePublishTopic[THINGPLUS_TOPIC_LEN] = {0,};
-	snprintf_P(valuePublishTopic, sizeof(valuePublishTopic), PSTR("v/a/g/%s/s/%s"), this->gatewayId, id);
+	snprintf(valuePublishTopic, sizeof(valuePublishTopic), PSTR("v/a/g/%s/s/%s"), this->gatewayId, id);
 
 	char v[THINGPLUS_VALUE_MESSAGE_LEN] = {0,};
-	snprintf_P(v, sizeof(v), PSTR("%ld000,"), now());
+	snprintf(v, sizeof(v), PSTR("%ld000,"), now());
+
+#ifdef __AVR__
 	dtostrf(value, 5, 2, &v[strlen(v)]);
+#else
+	sprintf(&v[strlen(v)], "%f", value);
+#endif
 
 	return this->mqttPublish(valuePublishTopic, v);
 }
 
 bool ThingplusClass::valuePublish(const char *id, int value) {
 	char valuePublishTopic[THINGPLUS_TOPIC_LEN] = {0,};
-	snprintf_P(valuePublishTopic, sizeof(valuePublishTopic), PSTR("v/a/g/%s/s/%s"), this->gatewayId, id);
+	snprintf(valuePublishTopic, sizeof(valuePublishTopic), PSTR("v/a/g/%s/s/%s"), this->gatewayId, id);
 
 	char v[THINGPLUS_VALUE_MESSAGE_LEN] = {0,};
-	snprintf_P(v, sizeof(v), PSTR("%ld000,%d"), now(), value);
+	snprintf(v, sizeof(v), PSTR("%ld000,%d"), now(), value);
 
 	return this->mqttPublish(valuePublishTopic, v);
 }
 
 bool ThingplusClass::statusPublish(const char *topic, bool on, time_t durationSec) {
 	char status[20] = {0,};
-	snprintf_P(status, sizeof(status), PSTR("%s,%ld000"), on ? "on" : "off", now() + durationSec);
+	snprintf(status, sizeof(status), PSTR("%s,%ld000"), on ? "on" : "off", now() + durationSec);
 
 	return this->mqttPublish(topic, status);
 }
 
 bool ThingplusClass::sensorStatusPublish(const char *id, bool on, time_t durationSec) {
 	char statusPublishTopic[THINGPLUS_TOPIC_LEN] = {0,};
-	snprintf_P(statusPublishTopic, sizeof(statusPublishTopic), PSTR("v/a/g/%s/s/%s/status"), this->gatewayId, id);
+	snprintf(statusPublishTopic, sizeof(statusPublishTopic), PSTR("v/a/g/%s/s/%s/status"), this->gatewayId, id);
 
 	return this->statusPublish(statusPublishTopic, on, durationSec);
 }
 
 bool ThingplusClass::gatewayStatusPublish(bool on, time_t durationSec) {
 	char statusPublishTopic[THINGPLUS_TOPIC_LEN] = {0,};
-	snprintf_P(statusPublishTopic, sizeof(statusPublishTopic), PSTR("v/a/g/%s/status"), this->gatewayId);
+	snprintf(statusPublishTopic, sizeof(statusPublishTopic), PSTR("v/a/g/%s/status"), this->gatewayId);
 
 	return this->statusPublish(statusPublishTopic, on, durationSec);
 }
 
 bool ThingplusClass::mqttStatusPublish(bool on) {
 	char topic[THINGPLUS_TOPIC_LEN] = {0,};
-	snprintf_P(topic, sizeof(topic), PSTR("v/a/g/%s/mqtt/status"), this->gatewayId);
+	snprintf(topic, sizeof(topic), PSTR("v/a/g/%s/mqtt/status"), this->gatewayId);
 
 	const char *message = on ? "on" : "off";
 
@@ -157,7 +163,7 @@ bool ThingplusClass::mqttStatusPublish(bool on) {
 
 bool ThingplusClass::loop(void) {
 	if (!this->mqtt.connected()) {
-		Serial.println(F("[ERR] MQTT disconnected"));
+		SERIALPRINTLN(F("[ERR] MQTT disconnected"));
 		this->connect();
 	}
 
@@ -169,37 +175,39 @@ void ThingplusClass::connect(void) {
 
 	bool ret;
 	char willTopic[32] =  {0,};
-	snprintf_P(willTopic, sizeof(willTopic), PSTR("v/a/g/%s/mqtt/status"), this->gatewayId);
+	snprintf(willTopic, sizeof(willTopic), PSTR("v/a/g/%s/mqtt/status"), this->gatewayId);
 
 	do 
 	{
 		ret = this->mqtt.connect(this->gatewayId, this->gatewayId, 
 				this->apikey, willTopic, 1, true, "err");
 		if (!ret) {
-			Serial.print(F("ERR: MQTT connection failed."));
+			SERIALPRINT(F("ERR: MQTT connection failed."));
 
 			int errCode = this->mqtt.state();
-			if (errCode == 5)
-				Serial.println(F(" APIKEY ERROR"));
-			else
-				Serial.println(this->mqtt.state());
-			Serial.println(F("ERR: Retry"));
+			if (errCode == 5) {
+				SERIALPRINTLN(F(" APIKEY ERROR"));
+			}
+			else {
+				SERIALPRINTLN(this->mqtt.state());
+			}
+			SERIALPRINTLN(F("ERR: Retry"));
 			delay(MQTT_RETRY_INTERVAL_MS);
 		}
 	} while(!this->mqtt.connected());
 
 	char subscribeTopic[32] = {0,};
-	snprintf_P(subscribeTopic, sizeof(subscribeTopic), PSTR("v/a/g/%s/req"), this->gatewayId);
+	snprintf(subscribeTopic, sizeof(subscribeTopic), PSTR("v/a/g/%s/req"), this->gatewayId);
 	this->mqtt.subscribe(subscribeTopic);
 
 	this->mqttStatusPublish(true);
 
-	Serial.println(F("INFO: MQTT Connected"));
+	SERIALPRINTLN(F("INFO: MQTT Connected"));
 }
 
 void ThingplusClass::disconnect(void) {
 	this->mqtt.disconnect();
-	Serial.println(F("INFO: MQTT Disconnected"));
+	SERIALPRINTLN(F("INFO: MQTT Disconnected"));
 }
 
 void ThingplusClass::begin(Client& client, byte mac[], const char *apikey)
@@ -208,7 +216,7 @@ void ThingplusClass::begin(Client& client, byte mac[], const char *apikey)
 	const int port = 1883;
 
 	this->mac = mac;
-	snprintf_P(this->gatewayId, sizeof(this->gatewayId), PSTR("%02x%02x%02x%02x%02x%02x"),
+	snprintf(this->gatewayId, sizeof(this->gatewayId), PSTR("%02x%02x%02x%02x%02x%02x"),
 			mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
 	this->apikey = apikey;
 
