@@ -14,7 +14,7 @@ const char *ledId = "led-000000000000-0";									//FIXME LED ID
 const char *temperatureId = "temperature-000000000000-0";	//FIXME TEMPERATURE ID
 const char *buzzerId = "buzzer-000000000000-0";						//FIXME BUZZER ID
 const char *lightId = "light-000000000000-0";							//FIXME LIGHT ID
-const char *noiseId = "noise-000000000000-0";							//FIXME NOISE ID
+const char *noiseId = "noise-000000000000-1";							//FIXME NOISE ID
 const char *buttonId = "onoff-000000000000-0";						//FIXME BUTTON ID
 /////////////////////////////////////////////////////////////////////////////
 
@@ -27,7 +27,7 @@ int BUTTON_GPIO = 3;
 int LED_GPIO = 8;
 int TEMP_GPIO = A0;
 int LIGHT_GPIO = A3;
-int BUZZER_GPIO = 2;
+int BUZZER_GPIO = 7;
 int NOISE_GPIO = A2;
 int reportIntervalSec = 60;
 
@@ -112,9 +112,11 @@ char* actuatingCallback(const char *id, const char *cmd, JsonObject& options) {
 	else if (strcmp(id, buzzerId) == 0) {
 		if (strcmp(cmd, "on") == 0) {
 			_buzzerOn();
+			return "success";
 		}
 		else if (strcmp(cmd, "off") == 0) {
 			_buzzerOff();
+			return "success";
 		}
 		else {
 			return NULL;
@@ -167,15 +169,20 @@ void loop() {
 
 	if (current > nextReportInterval) {
 		Thingplus.gatewayStatusPublish(true, reportIntervalSec * 3);
+
 		Thingplus.sensorStatusPublish(ledId, true, reportIntervalSec * 3);
 		Thingplus.sensorStatusPublish(buzzerId, true, reportIntervalSec * 3);
 		Thingplus.sensorStatusPublish(buttonId, true, reportIntervalSec * 3);
+
 		Thingplus.sensorStatusPublish(temperatureId, true, reportIntervalSec * 3);
 		Thingplus.valuePublish(temperatureId, temperatureGet());
+
 		Thingplus.sensorStatusPublish(lightId, true, reportIntervalSec * 3);
 		Thingplus.valuePublish(lightId, lightGet());
+
 		Thingplus.sensorStatusPublish(noiseId, true, reportIntervalSec * 3);
 		Thingplus.valuePublish(noiseId, noiseGet());
+
 		nextReportInterval = current + reportIntervalSec;
 	}
 }
