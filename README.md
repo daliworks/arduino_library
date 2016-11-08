@@ -12,23 +12,33 @@ Here is Thing+ arduino_libaray features.<br>
 - Automatic time synchronzing
 
 ### News
-- 09.26.2016 : v1.0.6 Release
+- Nov.08.2016 : v1.0.7 Released
+- Sep.26.2016 : v1.0.6 Released
    - For now, Thingplus library is compatible with CORTEX-M
-- 09.19.2016 : v1.0.5 Release
-- 07.27.2016 : v1.0.4 Released
- - From 1.0.4, Arduino example uees timer library. 
+- Sep.19.2016 : v1.0.5 Released
+- Jul.27.2016 : v1.0.4 Released
+ - From 1.0.4, Arduino example uees timer library.
    - If you want to run Arduino example, You MUST donwload timer library. You can download the library from here : https://github.com/JChristensen/Timer
    - Thingplus library is still independent from Timer library. If you are not running the example, You don`t need to install the Timer library.
-- 07.20.2016 : v1.0.2 Released
-- 07.05.2016 : v1.0.1 Released
-- 06.18.2016 : Now you can install Thingplus library with Arduino library manager
+- Jul.20.2016 : v1.0.2 Released
+- Jul.05.2016 : v1.0.1 Released
+- Jun.18.2016 : Now you can install Thingplus library with Arduino library manager
 
 ### Release Note
+- v1.0.7
+ - "connected" method added.
+ - Example modefied.
+   - Example Name changed.
+     - ReadTemperatureWriteLed to **ArduinoEthernet**
+     - ReadTemperatureWriteLed-esp8266 to **Esp8266**
+   - Sensors and actuator are added at ArduinoEthernet
+ - Example added for ArduinoWizFi250
+
 - v1.0.6
  - ARM Cortex-M compatibles added.
 - v1.0.5
  - Library stabilty enhanced.
-   - SRAM overflow fixed
+   - SRAM overflow fixed.
  - Example code modified.
    - Send actuator status periodically.
 - v1.0.4
@@ -72,6 +82,10 @@ http://support.thingplus.net/en/open-hardware/arduino-noSSL-user-guide.html
    Description : Connect Thing+ via MQTT
                  Before call this API, ARDUINO(ESP8266) MUST CONNECT INTERNET.
 ```
+#### bool connected(void)
+```
+   Description : Verify MQTT is connected or not.
+```
 #### void disconnect(void)
 ```
    Description : Disconnecting Thing+
@@ -105,7 +119,7 @@ http://support.thingplus.net/en/open-hardware/arduino-noSSL-user-guide.html
 
 #### bool valuePublish(const char *id, char *value)
 ```
-   Description : Send sensor sting value to Thing+
+   Description : Send sensor string value to Thing+
    Parameter
       - id : Sensor id.
       - value : Sensor value
