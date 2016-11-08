@@ -31,7 +31,7 @@ Here is Thing+ arduino_libaray features.<br>
    - Example Name changed.
      - ReadTemperatureWriteLed to **ArduinoEthernet**
      - ReadTemperatureWriteLed-esp8266 to **Esp8266**
-   - Sensors and actuator are added at ArduinoEthernet
+     - Sensors and actuator are added at ArduinoEthernet
  - Example added for ArduinoWizFi250
 
 - v1.0.6
