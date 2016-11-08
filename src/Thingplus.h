@@ -17,6 +17,7 @@ public:
 
 	void connect(void);
 	void disconnect(void);
+	bool connected(void);
 	bool loop(void);
 
 	bool mqttStatusPublish(bool on);

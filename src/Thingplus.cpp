@@ -205,13 +205,16 @@ void ThingplusClass::connect(void) {
 	SERIALPRINTLN(F("INFO: MQTT Connected"));
 }
 
+bool ThingplusClass::connected(void) {
+	return this->mqtt.connected();
+}
+
 void ThingplusClass::disconnect(void) {
 	this->mqtt.disconnect();
 	SERIALPRINTLN(F("INFO: MQTT Disconnected"));
 }
 
-void ThingplusClass::begin(Client& client, byte mac[], const char *apikey)
-{
+void ThingplusClass::begin(Client& client, byte mac[], const char *apikey) {
 	const char *server = "dmqtt.thingplus.net";
 	const int port = 1883;
 
