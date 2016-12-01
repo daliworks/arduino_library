@@ -13,7 +13,11 @@
 
 #ifdef __AVR__
 	#define snprintf		snprintf_P
-#else
 #endif
+
+#ifdef ESP8266
+#define PSTR(x)	x
+#endif
+
 
 #endif //#ifndef _PLATFORM_H_

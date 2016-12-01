@@ -17,7 +17,7 @@ const char *ledId = "led-000000000000-0";		                  	//FIXME LED ID
 const char *temperatureId = "temperature-000000000000-0";	      //FIXME TEMPERATURE ID
 //////////////////////////////////////////////////////////////////
 
-int LED_GPIO = 8;
+int LED_GPIO = 5;
 int TEMP_GPIO = A0;
 int reportIntervalSec = 60;
 
