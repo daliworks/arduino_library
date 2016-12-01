@@ -12,6 +12,7 @@ Here is Thing+ arduino_libaray features.<br>
 - Automatic time synchronzing
 
 ### News
+- Dec.01.2016 : v1.0.8 Released
 - Nov.08.2016 : v1.0.7 Released
 - Sep.26.2016 : v1.0.6 Released
    - For now, Thingplus library is compatible with CORTEX-M
@@ -25,6 +26,11 @@ Here is Thing+ arduino_libaray features.<br>
 - Jun.18.2016 : Now you can install Thingplus library with Arduino library manager
 
 ### Release Note
+- v1.0.8
+ - esp8266 platform configuration added.
+ - example modified
+   - esp8266 led gpio number is change to 5.
+
 - v1.0.7
  - "connected" method added.
  - Example modefied.
