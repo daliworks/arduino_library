@@ -31,6 +31,11 @@ void serverTimeSync(const char *serverTimeMs) {
 }
 
 void mqttSubscribeCallback(char *topic, uint8_t *payload, unsigned int length) {
+	SERIALPRINT(F("Subsclibe topic:"));
+	SERIALPRINT(topic);
+	SERIALPRINT(" payload:");
+	SERIALPRINTLN((const char*)payload);
+			
 	StaticJsonBuffer<200> jsonBuffer;
 	JsonObject& root = jsonBuffer.parseObject((char*)payload);
 	if (!root.success()) {
@@ -56,6 +61,11 @@ void mqttSubscribeCallback(char *topic, uint8_t *payload, unsigned int length) {
 }
 
 bool ThingplusClass::mqttPublish(const char *topic, const char *payload) {
+	SERIALPRINT(F("Publish topic:"));
+	SERIALPRINT(topic);
+	SERIALPRINT(" payload:");
+	SERIALPRINTLN(payload);
+
 	if (!this->mqtt.publish(topic, payload, strlen(payload))) {
 		SERIALPRINTLN(F("ERR Publish failed."));
 
@@ -115,7 +125,9 @@ bool ThingplusClass::valuePublish(const char *id, float value) {
 #ifdef __AVR__
 	dtostrf(value, 5, 2, &v[strlen(v)]);
 #else
-	sprintf(&v[strlen(v)], "%f", value);
+	int whole = value;
+	int decimal = (value - whole) * 10;
+	snprintf(&v[strlen(v)], THINGPLUS_VALUE_MESSAGE_LEN - strlen(v), "%d.%i", whole, decimal);
 #endif
 
 	return this->mqttPublish(valuePublishTopic, v);
