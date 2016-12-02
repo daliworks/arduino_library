@@ -12,6 +12,7 @@ Here is Thing+ arduino_libaray features.<br>
 - Automatic time synchronzing
 
 ### News
+- Dec.02.2016 : v1.0.9 Released
 - Dec.01.2016 : v1.0.8 Released
 - Nov.08.2016 : v1.0.7 Released
 - Sep.26.2016 : v1.0.6 Released
@@ -26,6 +27,12 @@ Here is Thing+ arduino_libaray features.<br>
 - Jun.18.2016 : Now you can install Thingplus library with Arduino library manager
 
 ### Release Note
+- v1.0.9
+ - bug fixed
+   - can`t not display floating point sensor value at esp8266
+ - example modified
+   - esp8266 led blink feature added.
+
 - v1.0.8
  - esp8266 platform configuration added.
  - example modified
