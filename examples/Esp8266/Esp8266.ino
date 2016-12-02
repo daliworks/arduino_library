@@ -1,13 +1,14 @@
-#include <Arduino.h>
-
-#include <ESP8266WiFi.h>
-#include <WiFiClient.h>
-
 extern "C" {
 #include "user_interface.h"
 }
 
+#include <Arduino.h>
+#include <ESP8266WiFi.h>
+#include <Time.h>
+#include <TimeLib.h>
+#include <Timer.h>
 #include <Thingplus.h>
+#include <WiFiClient.h>
 
 //////////////////////////////////////////////////////////////////
 const char *ssid = "";					                              	//FIXME
@@ -20,6 +21,11 @@ const char *temperatureId = "temperature-000000000000-0";	      //FIXME TEMPERAT
 int LED_GPIO = 5;
 int TEMP_GPIO = A0;
 int reportIntervalSec = 60;
+
+Timer t;
+
+int ledOffTimer = 0;
+int ledBlinkTimer = 0;
 
 static WiFiClient wifiClient;
 
@@ -69,15 +75,51 @@ static void _gpioInit(void) {
 	pinMode(LED_GPIO, OUTPUT);
 }
 
+static void _ledOn(JsonObject& options) {
+	int duration = options.containsKey("duration") ? options["duration"] : 0;
+
+	digitalWrite(LED_GPIO, HIGH);
+
+	if (duration)
+		ledOffTimer = t.after(duration, _ledOff);
+}
+
+static void _ledOff(void) {
+	t.stop(ledBlinkTimer);
+	digitalWrite(LED_GPIO, LOW);
+}
+
+static bool _ledBlink(JsonObject& options) {
+	if (!options.containsKey("interval")) {
+		Serial.println(F("[ERR] No blink interval"));
+		return false;
+	}
+
+	ledBlinkTimer = t.oscillate(LED_GPIO, options["interval"], HIGH);
+
+	if (options.containsKey("duration"))
+		ledOffTimer = t.after(options["duration"], _ledOff);
+
+	return true;
+}
+
 char* actuatingCallback(const char *id, const char *cmd, JsonObject& options) {
 	if (strcmp(id, ledId) == 0) { 
 		if (strcmp(cmd, "on") == 0) {
-			digitalWrite(LED_GPIO, HIGH);
+			_ledOn(options);
 			return "success";
 		}
 		else  if (strcmp(cmd, "off") == 0) {
-			digitalWrite(LED_GPIO, LOW);
+			_ledOff();
 			return "success";
+		}
+		else  if(strcmp(cmd, "blink") == 0) {
+			if (_ledBlink(options) ) {
+				return "success";
+			}
+			else {
+				return NULL;
+			}
 		}
 	}
 
@@ -101,6 +143,7 @@ void setup() {
 	Thingplus.connect();
 }
 
+
 time_t current;
 time_t nextReportInterval = now();
 
@@ -115,6 +158,8 @@ float temperatureGet() {
 }
 
 void loop() {
+	t.update();
+	system_soft_wdt_feed();
 	Thingplus.loop();
 
 	current = now();
