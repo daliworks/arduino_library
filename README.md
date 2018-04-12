@@ -12,6 +12,7 @@ Here is Thing+ arduino_libaray features.<br>
 - Automatic time synchronzing
 
 ### News
+- Apr.12.2018 : v1.0.11 Released
 - Jan.18.2017 : v1.0.10 Released
 - Dec.02.2016 : v1.0.9 Released
 - Dec.01.2016 : v1.0.8 Released
@@ -28,6 +29,9 @@ Here is Thing+ arduino_libaray features.<br>
 - Jun.18.2016 : Now you can install Thingplus library with Arduino library manager
 
 ### Release Note
+- v1.0.10
+ - Use TimeLib.h instead of Time.h
+ 
 - v1.0.10
  - New example added for Arduino + Esp8266
    - WARNING : This example CAN NOT receive actuator command from Thing+ due to WiFiEsp library Bugs.
